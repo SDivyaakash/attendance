@@ -20,7 +20,7 @@ services:
     runtime: static
     rootDir: frontend
     buildCommand: >
-      export VITE_API_URL="https://${BACKEND_HOST}/api" && npm install && npm run build
+      echo "VITE_API_URL=https://${BACKEND_HOST}/api" > .env.production && npm install && npm run build
     staticPublishPath: ./dist
     envVars:
       - key: BACKEND_HOST
