@@ -5,7 +5,16 @@ const AuthContext = createContext(null);
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(() => {
     const raw = localStorage.getItem("user");
-    return raw ? JSON.parse(raw) : null;
+    if (!raw || raw === "undefined" || raw === "null") return null;
+    try {
+      return JSON.parse(raw);
+    } catch {
+      // Corrupt/invalid data from a previous session — clear it and
+      // start fresh rather than crashing the whole app.
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      return null;
+    }
   });
 
   function login(token, user) {
