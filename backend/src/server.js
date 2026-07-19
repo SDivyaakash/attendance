@@ -7,7 +7,19 @@ import teacherRoutes from "./routes/teacher.js";
 import studentRoutes from "./routes/student.js";
 
 const app = express();
-app.use(cors());
+
+// In production, either set CORS_ORIGIN directly to your frontend's full
+// URL (comma-separate multiple origins if needed), e.g.
+// CORS_ORIGIN=https://rollcall-frontend.onrender.com
+// ...or, if deployed via the render.yaml Blueprint, FRONTEND_HOST is wired
+// automatically and we build the full origin from it.
+let corsOrigin = "*";
+if (process.env.CORS_ORIGIN) {
+  corsOrigin = process.env.CORS_ORIGIN.split(",").map((s) => s.trim());
+} else if (process.env.FRONTEND_HOST) {
+  corsOrigin = `https://${process.env.FRONTEND_HOST}`;
+}
+app.use(cors({ origin: corsOrigin }));
 app.use(express.json());
 
 app.get("/api/health", (req, res) => res.json({ ok: true }));
