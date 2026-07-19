@@ -1,5 +1,4 @@
 services:
-  # --- Backend API ---
   - type: web
     name: rollcall-backend
     runtime: node
@@ -14,19 +13,22 @@ services:
         fromService:
           name: rollcall-frontend
           type: web
-          property: host
+          envVarKey: RENDER_EXTERNAL_HOSTNAME
 
-  # --- Frontend static site ---
   - type: web
     name: rollcall-frontend
     runtime: static
     rootDir: frontend
     buildCommand: >
-      VITE_API_URL="https://${BACKEND_HOST}.onrender.com/api" npm install && npm run build
+      VITE_API_URL="https://${BACKEND_HOST}/api" npm install && npm run build
     staticPublishPath: ./dist
     envVars:
       - key: BACKEND_HOST
         fromService:
           name: rollcall-backend
           type: web
-          property: host
+          envVarKey: RENDER_EXTERNAL_HOSTNAME
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
